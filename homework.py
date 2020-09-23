@@ -1,24 +1,48 @@
+import os
 import time
 
 import requests
+from dotenv import load_dotenv
 from twilio.rest import Client
 
 
 def get_status(user_id):
+    load_dotenv()
+    vk_token = os.getenv('vk_token')
+    vk_fields = os.getenv('vk_fields')
+    vk_v = os.getenv('vk_v')
+
     params = {
-        ...
+        'user_ids': user_id,
+        'access_token': vk_token,
+        'fields': 'online',
+        'v': '5.92',
     }
-    ...
-    return ...  # Верните статус пользователя в ВК
+    user_info = requests.post('https://api.vk.com/method/users.get',
+                              params=params)
+    online_status = user_info.json()['response'][0]['online']
+    return online_status  # Верните статус пользователя в ВК
 
 
 def sms_sender(sms_text):
-    ...
-    return ...  # Верните sid отправленного сообщения из Twilio
+    load_dotenv()
+    twilio_token = os.getenv('twilio_token')
+    twilio_sid = os.getenv('twilio_sid')
+    twilio_phone_nomber = os.getenv('twilio_phone_nomber')
+    twilio_my_phone_nomber = os.getenv('twilio_my_phone_nomber')
+
+    client = Client(twilio_sid, twilio_token)
+
+    message = client.messages.create(
+        body=sms_text,
+        from_=twilio_phone_nomber,
+        to=twilio_my_phone_nomber
+    )
+    return message.sid  # Верните sid отправленного сообщения из Twilio
 
 
-if __name__ == "__main__":
-    vk_id = input("Введите id ")
+if __name__ == '__main__':
+    vk_id = input('Введите id ')
     while True:
         if get_status(vk_id) == 1:
             sms_sender(f'{vk_id} сейчас онлайн!')
