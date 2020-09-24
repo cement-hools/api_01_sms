@@ -28,15 +28,15 @@ def sms_sender(sms_text):
     load_dotenv()
     twilio_token = os.getenv('twilio_token')
     twilio_sid = os.getenv('twilio_sid')
-    twilio_phone_nomber = os.getenv('twilio_phone_nomber')
-    twilio_my_phone_nomber = os.getenv('twilio_my_phone_nomber')
+    NUMBER_FROM = os.getenv('NUMBER_FROM')
+    NUMBER_TO = os.getenv('NUMBER_TO')
 
     client = Client(twilio_sid, twilio_token)
 
     message = client.messages.create(
         body=sms_text,
-        from_=twilio_phone_nomber,
-        to=twilio_my_phone_nomber
+        from_=NUMBER_FROM,
+        to=NUMBER_TO
     )
     return message.sid  # Верните sid отправленного сообщения из Twilio
 
